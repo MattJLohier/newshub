@@ -275,7 +275,7 @@ def save_article(article):
     file_name = "saved_articles.json"
     save_json_to_s3(bucket_name, file_name, saved_articles, aws_access_key, aws_secret_key)
     #st.experimental_rerun()  # Reload the page to reflect changes
-    st.toast("Article saved successfully!", duration=3)
+    st.toast("Article saved successfully!", icon='✅')
 
 def delete_article(article_to_delete):
     saved_articles = st.session_state.get('saved_articles', [])
@@ -287,7 +287,7 @@ def delete_article(article_to_delete):
     file_name = "saved_articles.json"
     save_json_to_s3(bucket_name, file_name, saved_articles, aws_access_key, aws_secret_key)
     #st.experimental_rerun()  # Reload the page to reflect changes
-    st.toast("Article deleted successfully!", duration=3)
+    st.toast("Article deleted successfully!", icon='❌')
 
 def display_saved_articles():
     st.title("Saved Articles")
