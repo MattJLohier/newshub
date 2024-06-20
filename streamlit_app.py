@@ -348,8 +348,8 @@ def display_dashboard():
     st.markdown(css, unsafe_allow_html=True)  # Inject custom CSS
 
     # Display an info message with the new red background
-    st.info("Articles Spotted This Week")
     main_page()  # Call the first section
+    st.info("Articles Spotted This Week")
 
     # Load and display JSON data
     aws_access_key = st.secrets["aws"]["aws_access_key"]
