@@ -330,9 +330,9 @@ def display_logins_page():
 
 
 def main_page():
+    st.header("NewsHub 📝")
 
 def display_dashboard():
-    st.header("NewsHub 📝")
     # Custom CSS to override the default info color
     css = """
     <style>
