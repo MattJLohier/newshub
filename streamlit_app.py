@@ -26,7 +26,7 @@ image = Image.open(BytesIO(response.content))
 
 # Set the Streamlit page configuration with the custom icon
 st.set_page_config(
-    page_title="Upload",
+    page_title="News",
     page_icon=image,
     layout="wide",
     initial_sidebar_state="expanded"
