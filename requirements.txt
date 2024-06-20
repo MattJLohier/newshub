@@ -1,0 +1,9 @@
+streamlit>=1.26.0
+pandas
+s3fs
+st-files-connection
+matplotlib
+streamlit-echarts
+openpyxl
+boto3
+xlsxwriter

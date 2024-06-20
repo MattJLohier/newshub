@@ -1,0 +1,6 @@
+[server]
+maxMessageSize = 300
+maxUploadSize = 300
+
+[client]
+showErrorDetails = false
