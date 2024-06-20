@@ -226,20 +226,9 @@ def load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key):
         return None
 
 def display_json_data(data):
-    def parse_date(date_str):
-        # Adjust the date format as needed, e.g., '%Y-%m-%d' for '2023-06-19'
-        try:
-            return datetime.strptime(date_str, '%Y-%m-%d')
-        except ValueError:
-            return datetime.min  # Handle invalid date format
-
     for group in data:
         st.markdown(f"<h1 style='color:#FF00FF;'>{group['group_title']}</h1>", unsafe_allow_html=True)
-        
-        # Sort articles by date
-        articles_sorted = sorted(group['articles'], key=lambda x: parse_date(x.get('date', '')), reverse=True)
-        
-        for article in articles_sorted:
+        for article in group['articles']:
             st.markdown(f"<h2 style='color:teal;'>{article.get('title', 'No Title')}</h2>", unsafe_allow_html=True)
             st.write(f"**Date:** {article.get('date', 'No Date')}")
             st.write(f"**Description:** {article.get('description', 'No Description')}")
@@ -249,6 +238,7 @@ def display_json_data(data):
             if link != 'NA':
                 st.markdown(f"<a href='{link}' target='_blank'><button style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Read More</button></a>", unsafe_allow_html=True)
             st.markdown("---")
+
 # Ensure the rest of your code remains unchanged
 
 def main():
