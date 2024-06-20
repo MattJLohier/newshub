@@ -14,7 +14,7 @@ import pytz
 import openpyxl
 import boto3
 import warnings
-
+import json
 
 # URL of the image you want to use as the page icon
 icon_url = "https://i.postimg.cc/s2mzdzrz/newsicon.png"
@@ -210,6 +210,32 @@ def log_update(username, file_name):
     s3.put_object(Bucket=log_bucket, Key=log_file, Body=json.dumps(log_data))
 
 
+def load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key):
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=aws_access_key,
+        aws_secret_access_key=aws_secret_key
+    )
+    try:
+        obj = s3.get_object(Bucket=bucket_name, Key=file_name)
+        data = json.loads(obj['Body'].read().decode('utf-8'))
+        return data
+    except Exception as e:
+        st.error(f"Error loading JSON data: {e}")
+        return None
+
+def display_json_data(data):
+    for group in data:
+        st.header(group['group_title'])
+        for article in group['articles']:
+            st.subheader(article['title'])
+            st.write(f"**Date:** {article['date']}")
+            st.write(f"**Description:** {article['description']}")
+            st.write(f"**Source:** {article['source_name']}")
+            if article['link'] != 'NA':
+                st.write(f"[Link]({article['link']})")
+            st.markdown("---")
+
 def main():
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
@@ -319,9 +345,18 @@ def display_dashboard():
     st.markdown(css, unsafe_allow_html=True)  # Inject custom CSS
 
     # Display an info message with the new red background
-
     st.info("⚠️ News")
     main_page()  # Call the first section
+
+    # Load and display JSON data
+    aws_access_key = st.secrets["aws"]["aws_access_key"]
+    aws_secret_key = st.secrets["aws"]["aws_secret_key"]
+    bucket_name = st.secrets["aws"]["bucket_name"]
+    file_name = "PAIN.json"
+
+    data = load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key)
+    if data:
+        display_json_data(data)
 
 if __name__ == "__main__":
     main()
