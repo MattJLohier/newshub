@@ -233,8 +233,9 @@ def display_json_data(data):
             st.write(f"**Description:** {article['description']}")
             source_name = article.get('source_name', 'Unknown Source')
             st.markdown(f"**Source:** <span style='color:orange;'>{source_name}</span>", unsafe_allow_html=True)
-            if article['link'] != 'NA':
-                st.markdown(f"<a href='{article['link']}' target='_blank'><button style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Read More</button></a>", unsafe_allow_html=True)
+            link = article.get('link', 'NA')
+            if link != 'NA':
+                st.markdown(f"<a href='{link}' target='_blank'><button style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Read More</button></a>", unsafe_allow_html=True)
             st.markdown("---")
 
 # Ensure the rest of your code remains unchanged
