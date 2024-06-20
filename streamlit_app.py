@@ -209,7 +209,6 @@ def log_update(username, file_name):
     # Save log back to S3
     s3.put_object(Bucket=log_bucket, Key=log_file, Body=json.dumps(log_data))
 
-        )
 
 def main():
     if 'logged_in' not in st.session_state:
