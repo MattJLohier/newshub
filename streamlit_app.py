@@ -274,7 +274,7 @@ def save_article(article):
     bucket_name = st.secrets["aws"]["bucket_name"]
     file_name = "saved_articles.json"
     save_json_to_s3(bucket_name, file_name, saved_articles, aws_access_key, aws_secret_key)
-    st.experimental_rerun()  # Reload the page to reflect changes
+    #st.experimental_rerun()  # Reload the page to reflect changes
     toast("Article saved successfully!", duration=3)
 
 def delete_article(article_to_delete):
@@ -286,7 +286,7 @@ def delete_article(article_to_delete):
     bucket_name = st.secrets["aws"]["bucket_name"]
     file_name = "saved_articles.json"
     save_json_to_s3(bucket_name, file_name, saved_articles, aws_access_key, aws_secret_key)
-    st.experimental_rerun()  # Reload the page to reflect changes
+    #st.experimental_rerun()  # Reload the page to reflect changes
     toast("Article deleted successfully!", duration=3)
 
 def display_saved_articles():
