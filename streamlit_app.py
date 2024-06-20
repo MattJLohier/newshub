@@ -287,6 +287,7 @@ def delete_article(article_to_delete):
     bucket_name = st.secrets["aws"]["bucket_name"]
     file_name = "saved_articles.json"
     save_json_to_s3(bucket_name, file_name, saved_articles, aws_access_key, aws_secret_key)
+    st.toast("Article deleted successfully!", icon='❌')
     st.experimental_rerun()  # Reload the page to reflect changes
     time.sleep(1)
     st.toast("Article deleted successfully!", icon='❌')
