@@ -17,7 +17,7 @@ import warnings
 
 
 # URL of the image you want to use as the page icon
-icon_url = "https://i.postimg.cc/HxTLX3pY/News-Hub.png"
+icon_url = "https://i.postimg.cc/fW2bSx1s/newsicon.png"
 
 # Download the image
 response = requests.get(icon_url)
