@@ -226,12 +226,12 @@ def load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key):
 
 def display_json_data(data):
     for group in data:
-        st.header(group['group_title'])
+        st.markdown(f"<h1 style='color:pink;'>{group['group_title']}</h1>", unsafe_allow_html=True)
         for article in group['articles']:
-            st.subheader(article['title'])
+            st.markdown(f"<h2 style='color:pink;'>{article['title']}</h2>", unsafe_allow_html=True)
             st.write(f"**Date:** {article['date']}")
             st.write(f"**Description:** {article['description']}")
-            st.write(f"**Source:** {article['source_name']}")
+            st.markdown(f"**Source:** <span style='color:orange;'>{article['source_name']}</span>", unsafe_allow_html=True)
             if article['link'] != 'NA':
                 st.write(f"[Link]({article['link']})")
             st.markdown("---")
