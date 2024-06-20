@@ -291,8 +291,8 @@ def display_saved_articles():
     if data:
         for entry in data:
             try:
-                article = entry["article"]
-                saved_by = entry["saved_by"]
+                article = entry.get("article", entry)  # Handle both cases
+                saved_by = entry.get("saved_by", "Unknown")
                 st.markdown(f"<h2 style='color:teal;'>{article.get('title', 'No Title')}</h2>", unsafe_allow_html=True)
                 st.write(f"**Date:** {article.get('date', 'No Date')}")
                 st.write(f"**Description:** {article.get('description', 'No Description')}")
