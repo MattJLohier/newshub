@@ -24,7 +24,6 @@ icon_url = "https://i.postimg.cc/s2mzdzrz/newsicon.png"
 response = requests.get(icon_url)
 image = Image.open(BytesIO(response.content))
 
-
 # Set the Streamlit page configuration with the custom icon
 st.set_page_config(
     page_title="News",
@@ -46,7 +45,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
 def toggle_mode():
     if 'mode' not in st.session_state:
         st.session_state['mode'] = 'default'
@@ -59,18 +57,13 @@ def toggle_mode():
 def sidebar():
     st.sidebar.image("https://i.postimg.cc/HxTLX3pY/News-Hub.png", use_column_width=True)
     st.sidebar.markdown("---")
-    # Add a button to toggle between dark mode and light mode
-    # Add a button to toggle between default mode and red mode
 
-#    st.sidebar.markdown(
-#    """
-#    <div style="text-align: center;">
-#        <img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHF1bDFraGpsbmt1YWFxMXB0dG9jOXpnaW1xY3ZhM3kwY2NsZThodCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rBszdmXbzglQUX7N4j/giphy.gif" alt="Alt Text" style="width:100%; max-width:300px;">
-#    </div>
-#    """,
-#    unsafe_allow_html=True
-#)
-
+    # Add buttons for Scraped Data and Saved Articles
+    if st.sidebar.button("Scraped Data"):
+        st.session_state['page'] = 'scraped_data'
+    
+    if st.sidebar.button("Saved Articles"):
+        st.session_state['page'] = 'saved_articles'
 
 def login(username, password):
     try:
@@ -93,7 +86,6 @@ def login(username, password):
         st.error(f"KeyError: {e} - Check your secrets.toml configuration.")
         return False
     return False
-    
 
 def update_login_log(username):
     aws_access_key = st.secrets["aws"]["aws_access_key2"]
@@ -149,7 +141,6 @@ def get_last_login(username):
     except s3.exceptions.NoSuchKey:
         return "Never"
 
-
 def display_login_form():
     # Create three columns
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -172,8 +163,6 @@ def display_login_form():
                     st.rerun()
                 else:
                     st.error("Invalid username or password")
-
-
 
 def log_update(username, file_name):
     if username == "admin":
@@ -210,7 +199,6 @@ def log_update(username, file_name):
     # Save log back to S3
     s3.put_object(Bucket=log_bucket, Key=log_file, Body=json.dumps(log_data))
 
-
 def load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key):
     s3 = boto3.client(
         's3',
@@ -225,6 +213,17 @@ def load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key):
         st.error(f"Error loading JSON data: {e}")
         return None
 
+def save_json_to_s3(bucket_name, file_name, data, aws_access_key, aws_secret_key):
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=aws_access_key,
+        aws_secret_access_key=aws_secret_key
+    )
+    try:
+        s3.put_object(Bucket=bucket_name, Key=file_name, Body=json.dumps(data))
+    except Exception as e:
+        st.error(f"Error saving JSON data: {e}")
+
 def display_json_data(data):
     for group in data:
         st.markdown(f"<h1 style='color:#FF00FF;'>{group['group_title']}</h1>", unsafe_allow_html=True)
@@ -237,9 +236,39 @@ def display_json_data(data):
             link = article.get('link', 'NA')
             if link != 'NA':
                 st.markdown(f"<a href='{link}' target='_blank'><button style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Read More</button></a>", unsafe_allow_html=True)
+            if st.button("Save Article", key=f"save_{article.get('title')}"):
+                save_article(article)
             st.markdown("---")
 
-# Ensure the rest of your code remains unchanged
+def save_article(article):
+    saved_articles = st.session_state.get('saved_articles', [])
+    saved_articles.append(article)
+    st.session_state['saved_articles'] = saved_articles
+    aws_access_key = st.secrets["aws"]["aws_access_key"]
+    aws_secret_key = st.secrets["aws"]["aws_secret_key"]
+    bucket_name = st.secrets["aws"]["bucket_name"]
+    file_name = "saved_articles.json"
+    save_json_to_s3(bucket_name, file_name, saved_articles, aws_access_key, aws_secret_key)
+
+def display_saved_articles():
+    st.title("Saved Articles")
+    aws_access_key = st.secrets["aws"]["aws_access_key"]
+    aws_secret_key = st.secrets["aws"]["aws_secret_key"]
+    bucket_name = st.secrets["aws"]["bucket_name"]
+    file_name = "saved_articles.json"
+
+    data = load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key)
+    if data:
+        for article in data:
+            st.markdown(f"<h2 style='color:teal;'>{article.get('title', 'No Title')}</h2>", unsafe_allow_html=True)
+            st.write(f"**Date:** {article.get('date', 'No Date')}")
+            st.write(f"**Description:** {article.get('description', 'No Description')}")
+            source_name = article.get('source_name', 'Unknown Source')
+            st.markdown(f"**Source:** <span style='color:orange;'>{source_name}</span>", unsafe_allow_html=True)
+            link = article.get('link', 'NA')
+            if link != 'NA':
+                st.markdown(f"<a href='{link}' target='_blank'><button style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Read More</button></a>", unsafe_allow_html=True)
+            st.markdown("---")
 
 def main():
     if 'logged_in' not in st.session_state:
@@ -280,9 +309,12 @@ def main():
             display_dashboard()
         elif st.session_state['page'] == 'view_logins':
             display_logins_page()
+        elif st.session_state['page'] == 'scraped_data':
+            display_scraped_data()
+        elif st.session_state['page'] == 'saved_articles':
+            display_saved_articles()
     else:
         display_login_form()
-
 
 def display_logins_page():
     st.title("Login Information")
@@ -329,7 +361,6 @@ def display_logins_page():
         st.session_state['page'] = 'home'
         st.experimental_rerun()
 
-
 def main_page():
     st.header("NewsHub 📝")
 
@@ -353,6 +384,17 @@ def display_dashboard():
     st.info("Articles Spotted This Week")
 
     # Load and display JSON data
+    aws_access_key = st.secrets["aws"]["aws_access_key"]
+    aws_secret_key = st.secrets["aws"]["aws_secret_key"]
+    bucket_name = st.secrets["aws"]["bucket_name"]
+    file_name = "PAIN.json"
+
+    data = load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key)
+    if data:
+        display_json_data(data)
+
+def display_scraped_data():
+    st.title("Scraped Data")
     aws_access_key = st.secrets["aws"]["aws_access_key"]
     aws_secret_key = st.secrets["aws"]["aws_secret_key"]
     bucket_name = st.secrets["aws"]["bucket_name"]
