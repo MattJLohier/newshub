@@ -279,6 +279,7 @@ def delete_article(article_to_delete):
     bucket_name = st.secrets["aws"]["bucket_name"]
     file_name = "saved_articles.json"
     save_json_to_s3(bucket_name, file_name, saved_articles, aws_access_key, aws_secret_key)
+    st.experimental_rerun()  # Reload the page to reflect changes
 
 def display_saved_articles():
     st.title("Saved Articles")
@@ -288,8 +289,9 @@ def display_saved_articles():
     file_name = "saved_articles.json"
 
     data = load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key)
-    if data:
-        for entry in data:
+    st.session_state['saved_articles'] = data if data else []
+    if st.session_state['saved_articles']:
+        for entry in st.session_state['saved_articles']:
             try:
                 article = entry.get("article", entry)  # Handle both cases
                 saved_by = entry.get("saved_by", "Unknown")
