@@ -17,7 +17,7 @@ import warnings
 
 
 # URL of the image you want to use as the page icon
-icon_url = "https://i.postimg.cc/Z50pybw7/newshub-logo.png"
+icon_url = "https://i.postimg.cc/HxTLX3pY/News-Hub.png"
 
 # Download the image
 response = requests.get(icon_url)
@@ -56,7 +56,7 @@ def toggle_mode():
     st.experimental_rerun()
 
 def sidebar():
-    st.sidebar.image("https://i.postimg.cc/Z50pybw7/newshub-logo.png", use_column_width=True)
+    st.sidebar.image("https://i.postimg.cc/HxTLX3pY/News-Hub.png", use_column_width=True)
     st.sidebar.markdown("---")
     # Add a button to toggle between dark mode and light mode
     # Add a button to toggle between default mode and red mode
@@ -156,7 +156,7 @@ def display_login_form():
     with col2:  # Middle column for the form
         st.markdown("""
         <center>
-            <img src='https://i.postimg.cc/Z50pybw7/newshub-logo.png' width='400'>
+            <img src='https://i.postimg.cc/HxTLX3pY/News-Hub.png' width='400'>
         </center>
         """, unsafe_allow_html=True)
         with st.form(key='login_form'):
