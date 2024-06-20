@@ -14,7 +14,6 @@ import pytz
 import openpyxl
 import boto3
 import warnings
-from datetime import datetime
 import json
 
 # URL of the image you want to use as the page icon
