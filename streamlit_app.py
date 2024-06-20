@@ -8,6 +8,7 @@ import hashlib
 from io import BytesIO
 import io
 import json
+from streamlit_extras.toast import toast
 from PIL import Image
 import requests
 import pytz
@@ -274,6 +275,8 @@ def save_article(article):
     bucket_name = st.secrets["aws"]["bucket_name"]
     file_name = "saved_articles.json"
     save_json_to_s3(bucket_name, file_name, saved_articles, aws_access_key, aws_secret_key)
+    st.experimental_rerun()  # Reload the page to reflect changes
+    toast("Article saved successfully!", duration=3)
 
 def delete_article(article_to_delete):
     saved_articles = st.session_state.get('saved_articles', [])
@@ -285,6 +288,7 @@ def delete_article(article_to_delete):
     file_name = "saved_articles.json"
     save_json_to_s3(bucket_name, file_name, saved_articles, aws_access_key, aws_secret_key)
     st.experimental_rerun()  # Reload the page to reflect changes
+    toast("Article deleted successfully!", duration=3)
 
 def display_saved_articles():
     st.title("Saved Articles")
