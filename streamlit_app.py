@@ -330,7 +330,6 @@ def display_logins_page():
 
 
 def main_page():
-    st.subheader("News")
 
 def display_dashboard():
     st.header("NewsHub 📝")
@@ -349,7 +348,7 @@ def display_dashboard():
     st.markdown(css, unsafe_allow_html=True)  # Inject custom CSS
 
     # Display an info message with the new red background
-    st.info("⚠️ News")
+    st.info("Articles Spotted This Week")
     main_page()  # Call the first section
 
     # Load and display JSON data
