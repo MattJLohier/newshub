@@ -8,7 +8,6 @@ import hashlib
 from io import BytesIO
 import io
 import json
-from streamlit_extras.toast import toast
 from PIL import Image
 import requests
 import pytz
