@@ -1,3 +1,3 @@
-<img src="https://i.postimg.cc/XJdg0y7b/scooper-logo.png" alt="Scooper Logo" width="200">
+<img src="https://i.postimg.cc/Z50pybw7/newshub-logo.png" alt="Scooper Logo" width="200">
 
 
