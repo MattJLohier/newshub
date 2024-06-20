@@ -228,7 +228,7 @@ def display_json_data(data):
     for group in data:
         st.markdown(f"<h1 style='color:pink;'>{group['group_title']}</h1>", unsafe_allow_html=True)
         for article in group['articles']:
-            st.markdown(f"<h2 style='color:pink;'>{article['title']}</h2>", unsafe_allow_html=True)
+            st.markdown(f"<h2 style='color:#FF69B4;'>{article['title']}</h2>", unsafe_allow_html=True)
             st.write(f"**Date:** {article['date']}")
             st.write(f"**Description:** {article['description']}")
             st.markdown(f"**Source:** <span style='color:orange;'>{article['source_name']}</span>", unsafe_allow_html=True)
