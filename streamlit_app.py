@@ -228,9 +228,9 @@ def display_json_data(data):
     for group in data:
         st.markdown(f"<h1 style='color:#FF00FF;'>{group['group_title']}</h1>", unsafe_allow_html=True)
         for article in group['articles']:
-            st.markdown(f"<h2 style='color:teal;'>{article['title']}</h2>", unsafe_allow_html=True)
-            st.write(f"**Date:** {article['date']}")
-            st.write(f"**Description:** {article['description']}")
+            st.markdown(f"<h2 style='color:teal;'>{article.get('title', 'No Title')}</h2>", unsafe_allow_html=True)
+            st.write(f"**Date:** {article.get('date', 'No Date')}")
+            st.write(f"**Description:** {article.get('description', 'No Description')}")
             source_name = article.get('source_name', 'Unknown Source')
             st.markdown(f"**Source:** <span style='color:orange;'>{source_name}</span>", unsafe_allow_html=True)
             link = article.get('link', 'NA')
