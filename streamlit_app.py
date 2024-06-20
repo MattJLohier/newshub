@@ -290,7 +290,7 @@ def display_logins_page():
         aws_secret_access_key=aws_secret_key
     )
 
-    log_file = "login_log.json"
+    log_file = "login_log_news.json"
 
     # Fetch existing log from S3
     try:
