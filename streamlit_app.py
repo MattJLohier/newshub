@@ -239,7 +239,7 @@ def save_json_to_s3(bucket_name, file_name, data, aws_access_key, aws_secret_key
     except Exception as e:
         st.error(f"Error saving JSON data: {e}")
 
-def display_json_data(data):
+def display_json_data(data, saved_articles):
     for group in data:
         st.markdown(f"<h1 style='color:#FF00FF;'>{group['group_title']}</h1>", unsafe_allow_html=True)
         for article in group['articles']:
@@ -251,8 +251,14 @@ def display_json_data(data):
             link = article.get('link', 'NA')
             if link != 'NA':
                 st.markdown(f"<a href='{link}' target='_blank'><button style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Read More</button></a>", unsafe_allow_html=True)
-            if st.button("Save Article", key=f"save_{article.get('title')}"):
-                save_article(article)
+
+            # Check if the article is already saved
+            if article in saved_articles:
+                st.markdown("<button style='background-color: grey; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: not-allowed;'>Article Saved</button>", unsafe_allow_html=True)
+            else:
+                if st.button("Save Article", key=f"save_{article.get('title')}"):
+                    save_article(article)
+
             st.markdown("---")
 
 def save_article(article):
@@ -441,9 +447,14 @@ def display_scraped_data():
     bucket_name = st.secrets["aws"]["bucket_name"]
     file_name = "PAIN.json"
 
+    # Load saved articles
+    saved_articles_file = "saved_articles.json"
+    saved_articles = load_json_from_s3(bucket_name, saved_articles_file, aws_access_key, aws_secret_key)
+    saved_articles = [article['article'] for article in saved_articles] if saved_articles else []
+
     data = load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key)
     if data:
-        display_json_data(data)
+        display_json_data(data, saved_articles)
 
 if __name__ == "__main__":
     main()
