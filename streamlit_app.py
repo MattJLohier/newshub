@@ -270,9 +270,9 @@ def save_article(article):
     file_name = "saved_articles.json"
     save_json_to_s3(bucket_name, file_name, saved_articles, aws_access_key, aws_secret_key)
 
-def delete_article(article):
+def delete_article(article_to_delete):
     saved_articles = st.session_state.get('saved_articles', [])
-    saved_articles = [a for a in saved_articles if a["article"] != article]
+    saved_articles = [a for a in saved_articles if a["article"] != article_to_delete]
     st.session_state['saved_articles'] = saved_articles
     aws_access_key = st.secrets["aws"]["aws_access_key"]
     aws_secret_key = st.secrets["aws"]["aws_secret_key"]
@@ -290,20 +290,23 @@ def display_saved_articles():
     data = load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key)
     if data:
         for entry in data:
-            article = entry["article"]
-            saved_by = entry["saved_by"]
-            st.markdown(f"<h2 style='color:teal;'>{article.get('title', 'No Title')}</h2>", unsafe_allow_html=True)
-            st.write(f"**Date:** {article.get('date', 'No Date')}")
-            st.write(f"**Description:** {article.get('description', 'No Description')}")
-            source_name = article.get('source_name', 'Unknown Source')
-            st.markdown(f"**Source:** <span style='color:orange;'>{source_name}</span>", unsafe_allow_html=True)
-            link = article.get('link', 'NA')
-            if link != 'NA':
-                st.markdown(f"<a href='{link}' target='_blank'><button style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Read More</button></a>", unsafe_allow_html=True)
-            st.write(f"**Saved by:** {saved_by}")
-            if st.button("Delete Article", key=f"delete_{article.get('title')}"):
-                delete_article(article)
-            st.markdown("---")
+            try:
+                article = entry["article"]
+                saved_by = entry["saved_by"]
+                st.markdown(f"<h2 style='color:teal;'>{article.get('title', 'No Title')}</h2>", unsafe_allow_html=True)
+                st.write(f"**Date:** {article.get('date', 'No Date')}")
+                st.write(f"**Description:** {article.get('description', 'No Description')}")
+                source_name = article.get('source_name', 'Unknown Source')
+                st.markdown(f"**Source:** <span style='color:orange;'>{source_name}</span>", unsafe_allow_html=True)
+                link = article.get('link', 'NA')
+                if link != 'NA':
+                    st.markdown(f"<a href='{link}' target='_blank'><button style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Read More</button></a>", unsafe_allow_html=True)
+                st.write(f"**Saved by:** {saved_by}")
+                if st.button("Delete Article", key=f"delete_{article.get('title')}"):
+                    delete_article(article)
+                st.markdown("---")
+            except Exception as e:
+                st.error(f"Error displaying article: {e}")
 
 def main():
     if 'logged_in' not in st.session_state:
@@ -314,6 +317,9 @@ def main():
 
     if 'show_profile' not in st.session_state:
         st.session_state['show_profile'] = False
+
+    if 'saved_articles' not in st.session_state:
+        st.session_state['saved_articles'] = []
 
     if 'page' not in st.session_state:
         st.session_state['page'] = 'scraped_data'
