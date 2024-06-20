@@ -233,8 +233,10 @@ def display_json_data(data):
             st.write(f"**Description:** {article['description']}")
             st.markdown(f"**Source:** <span style='color:orange;'>{article['source_name']}</span>", unsafe_allow_html=True)
             if article['link'] != 'NA':
-                st.write(f"[Link]({article['link']})")
+                st.markdown(f"<a href='{article['link']}' target='_blank'><button style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Read More</button></a>", unsafe_allow_html=True)
             st.markdown("---")
+
+# Ensure the rest of your code remains unchanged
 
 def main():
     if 'logged_in' not in st.session_state:
