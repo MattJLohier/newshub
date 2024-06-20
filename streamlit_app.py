@@ -40,6 +40,22 @@ st.markdown(
     section[data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {
         font-size: 20px;  /* Adjust this value as needed */
     }
+    /* Custom button styles */
+    .sidebar-button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+        display: inline-block;
+        font-size: 20px;
+    }
+    .sidebar-button:hover {
+        background-color: #45a049;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -58,11 +74,11 @@ def sidebar():
     st.sidebar.image("https://i.postimg.cc/HxTLX3pY/News-Hub.png", use_column_width=True)
     st.sidebar.markdown("---")
 
-    # Add buttons for Scraped Data and Saved Articles
-    if st.sidebar.button("Scraped Data"):
+    # Add styled buttons for Scraped Data and Saved Articles
+    if st.sidebar.button("Scraped Data", key="scraped_data_button"):
         st.session_state['page'] = 'scraped_data'
     
-    if st.sidebar.button("Saved Articles"):
+    if st.sidebar.button("Saved Articles", key="saved_articles_button"):
         st.session_state['page'] = 'saved_articles'
 
 def login(username, password):
@@ -242,7 +258,21 @@ def display_json_data(data):
 
 def save_article(article):
     saved_articles = st.session_state.get('saved_articles', [])
-    saved_articles.append(article)
+    saved_article_entry = {
+        "article": article,
+        "saved_by": st.session_state['username']
+    }
+    saved_articles.append(saved_article_entry)
+    st.session_state['saved_articles'] = saved_articles
+    aws_access_key = st.secrets["aws"]["aws_access_key"]
+    aws_secret_key = st.secrets["aws"]["aws_secret_key"]
+    bucket_name = st.secrets["aws"]["bucket_name"]
+    file_name = "saved_articles.json"
+    save_json_to_s3(bucket_name, file_name, saved_articles, aws_access_key, aws_secret_key)
+
+def delete_article(article):
+    saved_articles = st.session_state.get('saved_articles', [])
+    saved_articles = [a for a in saved_articles if a["article"] != article]
     st.session_state['saved_articles'] = saved_articles
     aws_access_key = st.secrets["aws"]["aws_access_key"]
     aws_secret_key = st.secrets["aws"]["aws_secret_key"]
@@ -259,7 +289,9 @@ def display_saved_articles():
 
     data = load_json_from_s3(bucket_name, file_name, aws_access_key, aws_secret_key)
     if data:
-        for article in data:
+        for entry in data:
+            article = entry["article"]
+            saved_by = entry["saved_by"]
             st.markdown(f"<h2 style='color:teal;'>{article.get('title', 'No Title')}</h2>", unsafe_allow_html=True)
             st.write(f"**Date:** {article.get('date', 'No Date')}")
             st.write(f"**Description:** {article.get('description', 'No Description')}")
@@ -268,6 +300,9 @@ def display_saved_articles():
             link = article.get('link', 'NA')
             if link != 'NA':
                 st.markdown(f"<a href='{link}' target='_blank'><button style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Read More</button></a>", unsafe_allow_html=True)
+            st.write(f"**Saved by:** {saved_by}")
+            if st.button("Delete Article", key=f"delete_{article.get('title')}"):
+                delete_article(article)
             st.markdown("---")
 
 def main():
@@ -280,15 +315,14 @@ def main():
     if 'show_profile' not in st.session_state:
         st.session_state['show_profile'] = False
 
+    if 'page' not in st.session_state:
+        st.session_state['page'] = 'scraped_data'
+
     if st.session_state['logged_in']:
-        if 'page' not in st.session_state:
-            st.session_state['page'] = 'home'
-        
         sidebar()
 
         ## YOLO 
         # Display the profile button with username
-
         if st.sidebar.button(f"{st.session_state.get('emoji', '')} {st.session_state['username']}", use_container_width=True):
             st.session_state['show_modal'] = True
         
